@@ -1,0 +1,16 @@
+// CartItemRepository.java
+package com.example.shopmall.repository;
+
+import com.example.shopmall.entity.CartItem;
+import com.example.shopmall.entity.User;
+import com.example.shopmall.entity.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
+
+public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+    List<CartItem> findByUser(User user);
+    Optional<CartItem> findByUserAndProduct(User user, Product product);
+    void deleteByProductId(Long productId);
+}

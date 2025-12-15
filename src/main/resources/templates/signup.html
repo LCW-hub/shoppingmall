@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - 쇼핑몰</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+</head>
+<body>
+    <a href="/" class="home-link">
+        <i class="fas fa-arrow-left"></i>홈으로 돌아가기
+    </a>
+
+    <div class="auth-shell">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h2 class="auth-title">회원가입</h2>
+                <p class="auth-subtitle">쇼핑몰 회원이 되어 다양한 혜택을 누려보세요</p>
+            </div>
+            
+            <div class="auth-body">
+                <div th:if="${error}" class="alert alert-danger auth-alert" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span th:text="${error}">오류 메시지</span>
+                </div>
+
+                <form th:action="@{/signup}" th:object="${user}" method="post" id="signupForm" class="auth-form">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user me-2"></i>아이디
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" th:field="*{username}" id="username" class="form-control auth-input" 
+                                   placeholder="아이디를 입력하세요" required autocomplete="username" minlength="3">
+                            <div class="input-feedback"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock me-2"></i>비밀번호
+                        </label>
+                        <div class="input-wrapper password-wrapper">
+                            <input type="password" th:field="*{password}" id="password" class="form-control auth-input" 
+                                   placeholder="비밀번호를 입력하세요" required autocomplete="new-password" minlength="4">
+                            <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                            </button>
+                            <div class="input-feedback"></div>
+                        </div>
+                        <div class="password-strength" id="passwordStrength" style="display: none;">
+                            <div class="strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock me-2"></i>비밀번호 확인
+                        </label>
+                        <div class="input-wrapper password-wrapper">
+                            <input type="password" id="passwordConfirm" class="form-control auth-input" 
+                                   placeholder="비밀번호를 다시 입력하세요" required autocomplete="new-password">
+                            <button type="button" class="password-toggle" onclick="togglePassword('passwordConfirm')">
+                                <i class="fas fa-eye" id="passwordConfirmToggleIcon"></i>
+                            </button>
+                            <div class="input-feedback"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-id-card me-2"></i>이름
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" th:field="*{name}" id="name" class="form-control auth-input" 
+                                       placeholder="이름을 입력하세요" required autocomplete="name">
+                                <div class="input-feedback"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-envelope me-2"></i>이메일
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="email" th:field="*{email}" id="email" class="form-control auth-input" 
+                                       placeholder="이메일을 입력하세요" required autocomplete="email">
+                                <div class="input-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="auth-btn signup-btn" id="submitBtn">
+                        <span class="btn-text">
+                            <i class="fas fa-user-plus me-2"></i>회원가입
+                        </span>
+                        <span class="btn-loader" style="display: none;">
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            가입 중...
+                        </span>
+                    </button>
+                </form>
+                
+                <div class="auth-divider">
+                    <span>또는</span>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>이미 계정이 있으신가요? 
+                        <a href="/login" class="auth-link">
+                            <strong>로그인</strong>
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 비밀번호 표시/숨김 토글
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(inputId + 'ToggleIcon');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // 비밀번호 강도 체크
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const strengthText = document.getElementById('strengthText');
+            const strengthFill = document.getElementById('strengthFill');
+            const strengthBar = document.getElementById('passwordStrength');
+            
+            if (password.length >= 4) strength++;
+            if (password.length >= 6) strength++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            if (password.length === 0) {
+                strengthBar.style.display = 'none';
+                return;
+            }
+            
+            strengthBar.style.display = 'block';
+            const percentage = (strength / 5) * 100;
+            strengthFill.style.width = percentage + '%';
+            
+            if (strength <= 2) {
+                strengthFill.className = 'strength-fill weak';
+                strengthText.textContent = '약함';
+                strengthText.className = 'strength-text weak';
+            } else if (strength <= 3) {
+                strengthFill.className = 'strength-fill medium';
+                strengthText.textContent = '보통';
+                strengthText.className = 'strength-text medium';
+            } else {
+                strengthFill.className = 'strength-fill strong';
+                strengthText.textContent = '강함';
+                strengthText.className = 'strength-text strong';
+            }
+        }
+
+        // 비밀번호 확인 검증
+        function validatePasswordMatch() {
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('passwordConfirm');
+            const feedback = passwordConfirm.parentElement.querySelector('.input-feedback');
+            
+            if (passwordConfirm.value && password !== passwordConfirm.value) {
+                passwordConfirm.classList.add('is-invalid');
+                passwordConfirm.classList.remove('is-valid');
+                if (feedback) {
+                    feedback.textContent = '비밀번호가 일치하지 않습니다.';
+                    feedback.className = 'input-feedback invalid';
+                }
+                return false;
+            } else if (passwordConfirm.value && password === passwordConfirm.value) {
+                passwordConfirm.classList.remove('is-invalid');
+                passwordConfirm.classList.add('is-valid');
+                if (feedback) {
+                    feedback.textContent = '';
+                    feedback.className = 'input-feedback';
+                }
+                return true;
+            }
+            return true;
+        }
+
+        // 비밀번호 입력 시 강도 체크
+        document.getElementById('password').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+            if (document.getElementById('passwordConfirm').value) {
+                validatePasswordMatch();
+            }
+        });
+
+        // 비밀번호 확인 입력 시 검증
+        document.getElementById('passwordConfirm').addEventListener('input', function() {
+            validatePasswordMatch();
+        });
+
+        // 입력 필드 유효성 검사
+        document.querySelectorAll('.auth-input').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.id === 'passwordConfirm') {
+                    validatePasswordMatch();
+                } else {
+                    validateInput(this);
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    if (this.id === 'passwordConfirm') {
+                        validatePasswordMatch();
+                    } else {
+                        validateInput(this);
+                    }
+                }
+            });
+        });
+
+        function validateInput(input) {
+            const feedback = input.parentElement.querySelector('.input-feedback');
+            const value = input.value.trim();
+            
+            if (input.hasAttribute('required') && !value) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                if (feedback) {
+                    feedback.textContent = '필수 입력 항목입니다.';
+                    feedback.className = 'input-feedback invalid';
+                }
+                return false;
+            }
+            
+            if (input.type === 'email' && value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
+                    if (feedback) {
+                        feedback.textContent = '올바른 이메일 형식이 아닙니다.';
+                        feedback.className = 'input-feedback invalid';
+                    }
+                    return false;
+                }
+            }
+            
+            if (input.id === 'username' && value && value.length < 3) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                if (feedback) {
+                    feedback.textContent = '아이디는 최소 3자 이상이어야 합니다.';
+                    feedback.className = 'input-feedback invalid';
+                }
+                return false;
+            }
+            
+            if (input.id === 'password' && value && value.length < 4) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+                if (feedback) {
+                    feedback.textContent = '비밀번호는 최소 4자 이상이어야 합니다.';
+                    feedback.className = 'input-feedback invalid';
+                }
+                return false;
+            }
+            
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            if (feedback) {
+                feedback.textContent = '';
+                feedback.className = 'input-feedback';
+            }
+            return true;
+        }
+
+        // 폼 제출 시 로딩 상태
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const btnLoader = submitBtn.querySelector('.btn-loader');
+            
+            // 유효성 검사
+            let isValid = true;
+            document.querySelectorAll('.auth-input[required]').forEach(input => {
+                if (input.id === 'passwordConfirm') {
+                    if (!validatePasswordMatch()) {
+                        isValid = false;
+                    }
+                } else {
+                    if (!validateInput(input)) {
+                        isValid = false;
+                    }
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // 로딩 상태 표시
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline-flex';
+        });
+    </script>
+</body>
+</html>
